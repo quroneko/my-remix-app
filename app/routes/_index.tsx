@@ -54,7 +54,7 @@ export default function Index() {
               <td className="px-5">{user.age}</td>
               <td className="px-5">{user.email}</td>
               <td className="px-5">
-                {user.timestamp ? new Date(user.timestamp).toLocaleString() : 'N/A'}
+                {user.timestamp ? new Date(user.timestamp).toLocaleString().split("T")[0] : 'N/A'}
               </td>
             </tr>
           ))}
