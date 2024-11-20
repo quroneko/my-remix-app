@@ -12,22 +12,24 @@ export const meta: MetaFunction = () => {
 };
 
 export async function loader({ context }: LoaderFunctionArgs) {
-  console.time('d1');
+  
 
   const db = drizzle(context.cloudflare.env.DB);
 
   // insert a user
+  console.time('d1:insert');
   await db.insert(usersTable).values({
     name: faker.person.fullName(),
     age: faker.number.int({ min: 18, max: 65 }),
     email: faker.internet.email(),
   });
+  console.timeEnd('d1:insert');
 
   // select all users
+  console.time('d1:select');
   const users = await db.select().from(usersTable).all();
   const body = JSON.stringify({ users });
-
-  console.timeEnd('d1');
+  console.timeEnd('d1:select');
 
   return new Response(body, {
     headers: { 'Content-Type': 'application/json' },
