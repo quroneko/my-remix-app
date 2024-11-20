@@ -12,8 +12,6 @@ export const meta: MetaFunction = () => {
 };
 
 export async function loader({ context }: LoaderFunctionArgs) {
-  
-
   const db = drizzle(context.cloudflare.env.DB);
 
   // insert a user
