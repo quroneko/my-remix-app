@@ -34,7 +34,7 @@ export default function Index() {
   const data = useLoaderData<typeof loader>() as { users: User[] };
 
   return (
-    <div className="p-10 font-sans">
+    <div className="p-10">
       <h1 className="text-2xl font-bold text-gray-800 mb-4">Users</h1>
       <table className="min-w-full bg-gray-50 rounded-xl overflow-hidden">
         <thead className="h-10">
