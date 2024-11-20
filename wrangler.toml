@@ -9,3 +9,9 @@ assets = { directory = "./build/client" }
 # Configuration: https://developers.cloudflare.com/workers/observability/logs/workers-logs/#enable-workers-logs
 [observability]
 enabled = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "my-remix-app-db"
+database_id = "777dc7a6-ace5-40d4-a45b-a464a8d4c5df"
+migrations_dir = "drizzle"
