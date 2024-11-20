@@ -12,6 +12,8 @@ export const meta: MetaFunction = () => {
 };
 
 export async function loader({ context }: LoaderFunctionArgs) {
+  console.time('d1');
+
   const db = drizzle(context.cloudflare.env.DB);
 
   // insert a user
@@ -24,6 +26,8 @@ export async function loader({ context }: LoaderFunctionArgs) {
   // select all users
   const users = await db.select().from(usersTable).all();
   const body = JSON.stringify({ users });
+
+  console.timeEnd('d1');
 
   return new Response(body, {
     headers: { 'Content-Type': 'application/json' },
