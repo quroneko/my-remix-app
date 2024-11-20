@@ -1,8 +1,8 @@
+import { useLoaderData } from '@remix-run/react';
 import type { MetaFunction, LoaderFunctionArgs } from '@remix-run/cloudflare';
 import { drizzle } from 'drizzle-orm/d1';
-import { type User, users as usersTable } from '~/db/schema';
-import { useLoaderData } from '@remix-run/react';
 import { faker } from '@faker-js/faker';
+import { type User, users as usersTable } from '~/db/schema';
 
 export const meta: MetaFunction = () => {
   return [
@@ -48,7 +48,7 @@ export default function Index() {
         </thead>
         <tbody>
           {data.users.map((user) => (
-            <tr key={String(user.id)} className="hover:bg-gray-50 h-10">
+            <tr key={user.id} className="hover:bg-gray-50 h-10">
               <td className="px-5">{user.id}</td>
               <td className="px-5">{user.name}</td>
               <td className="px-5">{user.age}</td>
