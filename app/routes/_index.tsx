@@ -43,7 +43,6 @@ export default function Index() {
             <th className="px-5">Name</th>
             <th className="px-5">Age</th>
             <th className="px-5">Email</th>
-            <th className="px-5">Timestamp</th>
           </tr>
         </thead>
         <tbody>
@@ -53,9 +52,6 @@ export default function Index() {
               <td className="px-5">{user.name}</td>
               <td className="px-5">{user.age}</td>
               <td className="px-5">{user.email}</td>
-              <td className="px-5">
-                {user.timestamp ? new Date(user.timestamp).toLocaleString().split("T")[0] : 'N/A'}
-              </td>
             </tr>
           ))}
         </tbody>
