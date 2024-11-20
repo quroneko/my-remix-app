@@ -5,6 +5,12 @@
 
 ## Development
 
+Generate the Cloudflare D1 schema:
+
+```sh
+npm run migrate:local
+```
+
 Run the dev server:
 
 ```sh
@@ -30,14 +36,18 @@ You will need to rerun typegen whenever you make changes to `wrangler.toml`.
 
 ## Deployment
 
+Generate the Cloudflare D1 schema:
+
+```sh
+npm run generate
+npm run migrate:remote
+```
+
 If you don't already have an account, then [create a cloudflare account here](https://dash.cloudflare.com/sign-up) and after verifying your email address with Cloudflare, go to your dashboard and set up your free custom Cloudflare Workers subdomain.
 
 Once that's done, you should be able to deploy your app:
 
 ```sh
+# Unused: For using Workers' CI/CD
 npm run deploy
 ```
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever css framework you prefer. See the [Vite docs on css](https://vitejs.dev/guide/features.html#css) for more information.
