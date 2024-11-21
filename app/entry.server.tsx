@@ -29,7 +29,7 @@ export default async function handleRequest(
   const cacheKey = new Request(url.toString(), request);
   const cache = caches.default;
   const cachedResponse = await cache.match(cacheKey);
-  if (cachedResponse) {
+  if (url.pathname === "/" && request.method === "GET" && cachedResponse) {
     return new Response(cachedResponse.body, {
       headers: {
         ...cachedResponse.headers,

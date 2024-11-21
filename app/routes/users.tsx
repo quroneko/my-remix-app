@@ -12,23 +12,40 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export const loader: LoaderFunction = async ({ context }: LoaderFunctionArgs) => {
-  const db = drizzle(context.cloudflare.env.DB);
+export const loader: LoaderFunction = async ({ context, request }: LoaderFunctionArgs) => {
+  // Cache the response
+  const cacheUrl = new URL(request.url);
+  const cacheKey = new Request(cacheUrl.toString());
+  const cache = context.cloudflare.caches.default;
+  const cachedResponse = await cache.match(cacheKey);
+  if (cachedResponse) {
+    return cachedResponse;
+  }
 
   // select all users
   const selectStart = performance.now();
+  const db = drizzle(context.cloudflare.env.DB);
   const users = await db.select().from(usersTable).orderBy(desc(usersTable.timestamp)).all();
   const selectEnd = performance.now();
   const selectTime = selectEnd - selectStart;
 
   const body = JSON.stringify({ users, selectTime });
 
-  return new Response(body, {
-    headers: { 'Content-Type': 'application/json' },
+  // Create the response
+  const response = new Response(body, {
+    headers: {
+      'Content-Type': 'application/json',
+      'Cache-Control': 's-maxage=60',
+    },
   });
+
+  // Cache the response
+  context.cloudflare.ctx.waitUntil(cache.put(cacheKey, response.clone()));
+
+  return response;
 };
 
-export const action: ActionFunction = async ({ context }: LoaderFunctionArgs) => {
+export const action: ActionFunction = async ({ context, request }: LoaderFunctionArgs) => {
   const db = drizzle(context.cloudflare.env.DB);
 
   // insert a user
@@ -40,6 +57,12 @@ export const action: ActionFunction = async ({ context }: LoaderFunctionArgs) =>
   });
   const insertEnd = performance.now();
   const insertTime = insertEnd - insertStart;
+
+  // Delete the cache
+  const cache = context.cloudflare.caches.default;
+  const url = new URL(request.url);
+  const cacheKey = new Request(url.toString());
+  context.cloudflare.ctx.waitUntil(cache.delete(cacheKey));
 
   return new Response(JSON.stringify({ insertTime }), {
     headers: { 'Content-Type': 'application/json' },
