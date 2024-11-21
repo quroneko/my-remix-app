@@ -21,6 +21,9 @@ export default async function handleRequest(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   loadContext: AppLoadContext
 ) {
+  // Set the content type
+  responseHeaders.set("Content-Type", "text/html");
+
   // Check if the response is cached
   const url = new URL(request.url);
   const cacheKey = new Request(url.toString(), request);
@@ -65,7 +68,6 @@ export default async function handleRequest(
     await body.allReady;
   }
 
-  responseHeaders.set("Content-Type", "text/html");
   if (url.pathname.startsWith("/users")) {
     // Set cache control for users route
     responseHeaders.set("Cache-Control", "s-maxage=60");
