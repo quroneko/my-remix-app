@@ -68,7 +68,7 @@ export default async function handleRequest(
   responseHeaders.set("Content-Type", "text/html");
   if (url.pathname.startsWith("/users")) {
     // Set cache control for users route
-    responseHeaders.set("Cache-Control", "max-age=60");
+    responseHeaders.set("Cache-Control", "s-maxage=60");
   }
 
   // Create the response
