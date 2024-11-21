@@ -13,7 +13,7 @@ export const meta: MetaFunction = () => {
 };
 
 export const loader: LoaderFunction = async ({ context, request }: LoaderFunctionArgs) => {
-  // Cache the response
+  // Try to get cached response
   const cacheUrl = new URL(request.url);
   const cacheKey = new Request(cacheUrl.toString());
   const cache = context.cloudflare.caches.default;
@@ -22,24 +22,22 @@ export const loader: LoaderFunction = async ({ context, request }: LoaderFunctio
     return cachedResponse;
   }
 
-  // select all users
+  // Fetch users from d1 with performance measurement
   const selectStart = performance.now();
   const db = drizzle(context.cloudflare.env.DB);
   const users = await db.select().from(usersTable).orderBy(desc(usersTable.timestamp)).all();
   const selectEnd = performance.now();
   const selectTime = selectEnd - selectStart;
 
-  const body = JSON.stringify({ users, selectTime });
-
-  // Create the response
-  const response = new Response(body, {
+  // Create response with 60 seconds cache
+  const response = new Response(JSON.stringify({ users, selectTime }), {
     headers: {
       'Content-Type': 'application/json',
       'Cache-Control': 's-maxage=60',
     },
   });
 
-  // Cache the response
+  // Asynchronously store response in Cloudflare's cache
   context.cloudflare.ctx.waitUntil(cache.put(cacheKey, response.clone()));
 
   return response;
