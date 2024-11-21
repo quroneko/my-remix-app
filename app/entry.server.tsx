@@ -70,7 +70,7 @@ export default async function handleRequest(
 
   if (url.pathname.startsWith("/users")) {
     // Set cache control for users route
-    responseHeaders.set("Cache-Control", "s-maxage=60");
+    responseHeaders.set("Cache-Control", "s-maxage=180");
   }
 
   // Create the response
