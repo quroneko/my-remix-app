@@ -79,7 +79,7 @@ export default async function handleRequest(
 
   // Cache the response
   if (request.method === "GET" && responseStatusCode === 200) {
-    await cache.put(cacheKey, response.clone());
+    loadContext.cloudflare.ctx.waitUntil(cache.put(cacheKey, response.clone()));
   }
 
   return response;
