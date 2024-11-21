@@ -21,9 +21,24 @@ export default async function handleRequest(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   loadContext: AppLoadContext
 ) {
+  // Check if the response is cached
+  const url = new URL(request.url);
+  const cacheKey = new Request(url.toString(), request);
+  const cache = caches.default;
+  const cachedResponse = await cache.match(cacheKey);
+  if (cachedResponse) {
+    return new Response(cachedResponse.body, {
+      headers: {
+        ...cachedResponse.headers,
+        "Custom-Cache-Status": "HIT",
+      },
+      status: cachedResponse.status,
+    });
+  }
+
+  // Render the app
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), ABORT_DELAY);
-
   const body = await renderToReadableStream(
     <RemixServer
       context={remixContext}
@@ -42,15 +57,30 @@ export default async function handleRequest(
     }
   );
 
+  // Clear the timeout
   body.allReady.then(() => clearTimeout(timeoutId));
 
+  // Wait for the app to be ready
   if (isbot(request.headers.get("user-agent") || "")) {
     await body.allReady;
   }
 
   responseHeaders.set("Content-Type", "text/html");
-  return new Response(body, {
+  if (url.pathname.startsWith("/users")) {
+    // Set cache control for users route
+    responseHeaders.set("Cache-Control", "max-age=60");
+  }
+
+  // Create the response
+  const response = new Response(body, {
     headers: responseHeaders,
     status: responseStatusCode,
   });
+
+  // Cache the response
+  if (request.method === "GET" && responseStatusCode === 200) {
+    await cache.put(cacheKey, response.clone());
+  }
+
+  return response;
 }
