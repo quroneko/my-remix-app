@@ -80,7 +80,11 @@ export default async function handleRequest(
   });
 
   // Cache the response
-  if (request.method === "GET" && responseStatusCode === 200) {
+  if (
+    url.pathname === "/" &&
+    request.method === "GET" &&
+    responseStatusCode === 200
+  ) {
     loadContext.cloudflare.ctx.waitUntil(cache.put(cacheKey, response.clone()));
   }
 
