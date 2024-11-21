@@ -68,8 +68,8 @@ export default async function handleRequest(
     await body.allReady;
   }
 
-  if (url.pathname.startsWith("/users")) {
-    // Set cache control for users route
+  if (url.pathname === "/") {
+    // Set cache control for index route
     responseHeaders.set("Cache-Control", "s-maxage=180");
   }
 
